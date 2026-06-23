@@ -8,6 +8,9 @@ import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLoc
 import sootup.java.core.views.JavaView;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
+import sootup.core.util.DotExporter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import com.vulnfinder.checkers.HardcodedSecretChecker;
 import com.vulnfinder.checkers.SqlInjectionChecker;
 
@@ -49,6 +52,40 @@ public class VulnFinder {
                         method.getBody().getStmts().forEach(stmt -> {
                             System.out.println("  " + stmt);
                         });
+                        
+                        // Export CFG for processUserData method
+                        if (method.getName().equals("processUserData")) {
+                            try {
+                                var stmtGraph = method.getBody().getStmtGraph();
+                                
+                                File vizDir = new File("visualizations");
+                                if (!vizDir.exists()) {
+                                    vizDir.mkdirs();
+                                }
+                                
+                                String dotContent = DotExporter.buildGraph(stmtGraph, true, new java.util.HashMap<>(), method.getSignature());
+                                StringBuilder fullDot = new StringBuilder();
+                                fullDot.append("digraph G {\n");
+                                fullDot.append("\tcompound=true\n");
+                                fullDot.append("\tlabelloc=b\n");
+                                fullDot.append("\tstyle=filled\n");
+                                fullDot.append("\tcolor=gray90\n");
+                                fullDot.append("\tnode [shape=box,style=filled,color=white]\n");
+                                fullDot.append("\tedge [fontsize=10,arrowsize=1.5,fontcolor=grey40]\n");
+                                fullDot.append("\tfontsize=10\n\n");
+                                fullDot.append(dotContent);
+                                fullDot.append("\n}");
+                                
+                                Files.writeString(Paths.get("visualizations", "processUserData_cfg.dot"), fullDot.toString());
+                                System.out.println("\n[INFO] CFG exported successfully to visualizations/processUserData_cfg.dot");
+                                
+                                String webUrl = DotExporter.createUrlToWebeditor(stmtGraph);
+                                System.out.println("[INFO] Online CFG Visualization Link: " + webUrl);
+                            } catch (Exception ex) {
+                                System.err.println("Failed to export CFG: " + ex.getMessage());
+                                ex.printStackTrace();
+                            }
+                        }
                     } else {
                         System.out.println("--- No Method Body (Native or Abstract) ---");
                     }

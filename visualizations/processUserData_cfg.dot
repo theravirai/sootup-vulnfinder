@@ -1,0 +1,61 @@
+digraph G {
+	compound=true
+	labelloc=b
+	style=filled
+	color=gray90
+	node [shape=box,style=filled,color=white]
+	edge [fontsize=10,arrowsize=1.5,fontcolor=grey40]
+	fontsize=10
+
+//  lines [16: 16] 
+	subgraph cluster_1935972447 { 
+		label = "Block #1"
+		572191680[label="this := @this: com.vulnfinder.TargetCode",shape=Mdiamond,color=grey50,fillcolor=white]
+		97652294[label="username := @parameter0: java.lang.String"]
+		1889248251[label="password := @parameter1: java.lang.String"]
+
+		572191680 -> 97652294 -> 1889248251
+	}
+	1889248251:s -> 266272063:n
+
+//  lines [16: 22] 
+	subgraph cluster_1783047508 { 
+		label = "Block #2"
+		266272063[label="conn#0 = staticinvoke &lt;java.sql.DriverManager: java.sql.Connection getConnection(java.lang.String,java.lang.String,java.lang.String)&gt;(&quot;jdbc:mysql://localhost:3306/db&quot;, username, password)"]
+		1771243284[label="stmt = interfaceinvoke conn#0.&lt;java.sql.Connection: java.sql.Statement createStatement()&gt;()"]
+		172032696[label="query = dynamicinvoke &quot;makeConcatWithConstants&quot; &lt;java.lang.String (java.lang.String)&gt;(username) &lt;java.lang.invoke.StringConcatFactory: java.lang.invoke.CallSite makeConcatWithConstants(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.String,java.lang.Object[])&gt;(&quot;SELECT * FROM users WHERE username = \&apos;\u0001\&apos;&quot;)"]
+		2052256418[label="interfaceinvoke stmt.&lt;java.sql.Statement: boolean execute(java.lang.String)&gt;(query)"]
+
+		266272063 -> 1771243284 -> 172032696 -> 2052256418
+	}
+	2052256418:s -> 827084938:n
+	//exceptional edges 
+	2052256418:e -> 2013559698:n [label="	java.lang.Exception"color=red,ltail="cluster_1783047508"]
+
+//  lines [-1: 25] 
+	subgraph cluster_2146608740 { 
+		label = "Block #3"
+		2013559698[label="$stack6 := @caughtexception"]
+		2043318969[label="conn#1 = (java.lang.Throwable) $stack6"]
+		143695640[label="#l0 = (java.lang.Exception) $stack6"]
+		433287555[label="virtualinvoke #l0.&lt;java.lang.Exception: void printStackTrace()&gt;()"]
+
+		2013559698 -> 2043318969 -> 143695640 -> 433287555
+	}
+	433287555:s -> 1796371666:n
+
+//  lines [26: 26] 
+	subgraph cluster_1641313620 { 
+		label = "Block #4"
+		827084938[label="goto"]
+	}
+	827084938:s -> 1796371666:n
+
+//  lines [27: 27] 
+	subgraph cluster_1295226194 { 
+		label = "Block #5"
+		1796371666[label="return",shape=Mdiamond,color=grey50,fillcolor=white]
+	}
+
+
+}
