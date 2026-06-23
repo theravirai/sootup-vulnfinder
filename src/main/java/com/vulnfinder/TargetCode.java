@@ -7,8 +7,8 @@ import java.sql.Statement;
 public class TargetCode {
 
     // Vulnerability 1: Hardcoded credentials / secret key
-    private static final String AWS_SECRET_KEY = "AKIAIOSFODNN7EXAMPLE";
-    private static final String SLACK_TOKEN = "xoxb-123456789012-1234567890123-456789abcdef";
+    private static String AWS_SECRET_KEY = "AKIAIOSFODNN7EXAMPLE";
+    private static String SLACK_TOKEN = "xoxb-123456789012-1234567890123-456789abcdef";
 
     public void processUserData(String username, String password) {
         try {
